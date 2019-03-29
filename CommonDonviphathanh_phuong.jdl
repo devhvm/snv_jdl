@@ -1,0 +1,233 @@
+application {
+  config {
+    baseName gateway,
+    applicationType gateway,
+    packageName com.manager.gateway,
+    serviceDiscoveryType eureka,
+    authenticationType jwt,
+    prodDatabaseType mysql,
+    cacheProvider hazelcast,
+    buildTool maven,
+    clientFramework react,
+    serverPort 15050,
+    languages [en,vi],
+    nativeLanguage vi,	
+    useSass true,
+    testFrameworks [protractor]
+  }
+  entities *
+}
+
+application {
+  config {
+    baseName common,
+    applicationType microservice,
+    packageName com.manager.common,
+    serviceDiscoveryType eureka,
+    authenticationType jwt,
+    prodDatabaseType mysql,
+    buildTool maven,
+    serverPort 15051,
+    languages [en,vi],
+    nativeLanguage vi,
+    skipUserManagement true
+  }
+  entities NhomChiTieu, ChiTieu, NhomDanhMuc, DanhMuc, DoiTuong, NhomPhanLoai, DonVi, PhamVi, NhomNoiDung, NoiDung
+}
+
+application {
+  config {
+    baseName donviphathanh,
+    applicationType microservice,
+    packageName com.manager.donviphathanh,
+    serviceDiscoveryType eureka,
+    authenticationType jwt,
+    prodDatabaseType mysql,
+    buildTool maven,
+    serverPort 15052,
+    languages [en,vi],
+    nativeLanguage vi,
+    skipUserManagement true
+  }
+  entities MauPhatHanh, MauPhatHanhTieuChi, TieuChi, KyCongBo, TieuChiBaoCao
+}
+
+/* Entities for common */
+
+entity NhomChiTieu {
+    nhomChiTieuCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity ChiTieu {
+    chiTieuCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity NhomDanhMuc {
+    nhomDanhMucCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity DanhMuc {
+    danhMucCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity NhomPhanLoai {
+    nhomPhanLoaiCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity DoiTuong {
+    doiTuongCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity DonVi {
+    donViCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity PhamVi {
+    begin String required
+    end String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity NhomNoiDung {
+    nhomNoiDungCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+entity NoiDung {
+    noiDungCode String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status Status required
+    program String required
+}
+
+  enum Status {
+    PUBLISH, UNPUBLISH, DELETED
+  }
+
+relationship OneToMany {
+   NhomChiTieu{chitieu} to ChiTieu{nhomchitieu}
+   DonVi{nhomphanloai} to NhomPhanLoai{donvi},
+   NhomPhanLoai{doituong} to DoiTuong{nhomphanloai},
+   NhomNoiDung{NoiDung} to NoiDung{nhomnoidung}
+}
+   
+relationship OneToOne {
+  DonVi{phamvi} to PhamVi{donvi}
+}
+dto * with mapstruct
+service NhomChiTieu, ChiTieu, NhomDanhMuc, DanhMuc, DoiTuong, NhomPhanLoai, DonVi, PhamVi, NhomNoiDung, NoiDung with serviceImpl
+paginate NhomChiTieu, ChiTieu, NhomDanhMuc, DanhMuc, DoiTuong, NhomPhanLoai, DonVi, PhamVi, NhomNoiDung, NoiDung with pagination
+microservice NhomChiTieu, ChiTieu, NhomDanhMuc, DanhMuc, DoiTuong, NhomPhanLoai, DonVi, PhamVi, NhomNoiDung, NoiDung with common
+
+/* Entities for donviphathanh */
+
+entity MauPhatHanh {
+    mauPhatHanhCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status ReportStatus required
+    program String required
+}
+
+entity MauPhatHanhTieuChi {
+}
+
+entity TieuChi {
+    tieuChiCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status ReportStatus required
+    program String required
+}
+
+entity KyCongBo {
+    kyCongBoCode String required
+    name String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status ReportStatus required
+    program String required
+}
+
+entity TieuChiBaoCao {
+    tieuChiBaoCaoCode String required
+    userName String required
+    createTime ZonedDateTime required
+    updateTime ZonedDateTime required
+    status ReportStatus required
+    program String required
+}
+
+  enum ReportStatus {
+    NEW, ACTIVED, CANCELLED, DELETED, SIGNED, COMPLETED
+  }
+
+relationship OneToMany {
+   KyCongBo{tieuchi} to TieuChi{kycongbo},
+   TieuChi{tieuchibaocao} to TieuChiBaoCao{tieuchi}
+   TieuChi{mauphathanhtieuchi} to MauPhatHanhTieuChi{tieuchi}
+   MauPhatHanh{mauphathanhtieuchi} to MauPhatHanhTieuChi{mauphathanh}
+}
+dto * with mapstruct
+service MauPhatHanh, MauPhatHanhTieuChi, TieuChi, KyCongBo, TieuChiBaoCao with serviceImpl
+paginate MauPhatHanh, MauPhatHanhTieuChi, TieuChi, KyCongBo, TieuChiBaoCao with pagination
+microservice MauPhatHanh, MauPhatHanhTieuChi, TieuChi, KyCongBo, TieuChiBaoCao with donviphathanh
+
